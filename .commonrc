@@ -1,0 +1,58 @@
+#
+# Khronos31 | .commonrc
+#
+
+[ -r ~/.common_aliases ] && . ~/.common_aliases
+
+export LANG="ja_JP.UTF-8"
+
+export THEOS="$HOME/theos"
+export GOPATH="$HOME/go"
+export NIMBLE_DIR="$HOME/.nimble"
+export CARGO_HOME="$HOME/.cargo"
+export PATH="$THEOS/bin:$GOPATH/bin:$NIMBLE_DIR/bin:$CARGO_HOME/bin:$PATH"
+
+if command -v luarocks >/dev/null; then
+  eval "$(luarocks path)"
+fi
+
+[ -d "/Applications/Filza.app" ] &&
+filza() {
+  local suffix=""
+  if ! [ -e "$1" ]; then
+    printf 'filza: no such file or directory: %s\n' "$1" >&2
+    return 1
+  elif [ -d "$1" ]; then
+    suffix="/."
+  fi
+  uiopen filza://view/"$(realpath -z "$1"|tr -d '\0'|od -tx1 -v -An|tr ' ' '%'|tr -d '\n')""$suffix"
+}
+
+if command -v pbcopy >/dev/null; then
+  clip_command='pbcopy'
+elif command -v xclip >/dev/null; then
+  clip_command='xclip -selection c'
+  alias pbcopy='xclip -selection c'
+  alias pbpaste='xclip -selection c -o'
+elif command -v termux-clipboard-set >/dev/null; then
+  clip_command='termux-clipboard-set'
+  alias pbcopy='termux-clipboard-set'
+  alias pbpaste='termux-clipboard-get'
+elif [ -r /dev/clipboard ]; then
+  clip_command='pbcopy'
+  pbcopy() {
+    cat >/dev/clipboard
+  }
+  pbpaste() {
+    cat /dev/clipboard
+  }
+fi
+
+# aliases and environment variables for textimg
+export RUNEWIDTH_EASTASIAN=1
+export TEXTIMG_FONT_FILE="$HOME/Library/Fonts/PlemolJP-Text.ttf"
+export TEXTIMG_EMOJI_DIR="$HOME/Library/Fonts/emoji/noto-emoji/png/128"
+alias textimg='TEXTIMG_OUTPUT_DIR="$(pwd)" textimg'
+
+#export ENTFILE="/usr/share/entitlements/general.xml"
+alias resign='ldid -S"$ENTFILE" -M'

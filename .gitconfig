@@ -1,0 +1,10 @@
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[user]
+	name = Khronos31
+	email = 39792509+Khronos31@users.noreply.github.com
+[url "git@github.com:"]
+	pushInsteadOf = https://github.com/
