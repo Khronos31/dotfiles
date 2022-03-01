@@ -31,10 +31,10 @@ apk add \
   clang lld \
   lua5.4
 
-# adduser mobile
-# echo '%mobile ALL=(ALL) ALL' >> /etc/sudoers.d/mobile
+adduser mobile -s /bin/bash <<'EOF'
+alpine
+alpine
+EOF
 
-# unlink /bin/login
-# echo -e '#!/bin/sh\n\nexec busybox login -f mobile' > /bin/login
-# chmod 4755 /bin/login
+echo '%mobile ALL=(ALL) ALL' >> /etc/sudoers.d/mobile
 
