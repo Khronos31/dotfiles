@@ -23,6 +23,6 @@ apt install -y \
   tar \
   gzip bzip2 lzip xz-utils zstd zip unzip p7zip \
   clang \
-  lua5.4
+  lua54
 
 termux-setup-storage
