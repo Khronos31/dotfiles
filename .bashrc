@@ -4,7 +4,7 @@
 
 [[ $- != *i* ]] && return
 
-[ -r ~/.commonrc ] && . ~/.commonrc
+[ -f ~/.commonrc ] && . ~/.commonrc
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
@@ -77,3 +77,9 @@ eval "yy() {
     $clip_command
 }"
 unset clip_command
+
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+  . /usr/share/bash-completion/bash_completion
+elif [ -f /etc/bash_completion ]; then
+  . /etc/bash_completion
+fi

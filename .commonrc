@@ -2,7 +2,7 @@
 # Khronos31 | .commonrc
 #
 
-[ -r ~/.common_aliases ] && . ~/.common_aliases
+[ -f ~/.common_aliases ] && . ~/.common_aliases
 
 export LANG="ja_JP.UTF-8"
 
@@ -11,6 +11,14 @@ export GOPATH="$HOME/go"
 export NIMBLE_DIR="$HOME/.nimble"
 export CARGO_HOME="$HOME/.cargo"
 export PATH="$THEOS/bin:$GOPATH/bin:$NIMBLE_DIR/bin:$CARGO_HOME/bin:$PATH"
+
+if [ -d "$HOME/bin" ]; then
+  export PATH="$HOME/bin:$PATH"
+fi
+
+if [ -d "$HOME/.local/bin" ]; then
+  export PATH="$HOME/.local/bin:$PATH"
+fi
 
 if command -v luarocks >/dev/null; then
   eval "$(luarocks path)"

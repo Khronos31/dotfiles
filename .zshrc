@@ -4,7 +4,7 @@
 
 [[ $- != *i* ]] && return
 
-[ -r ~/.commonrc ] && . ~/.commonrc
+[ -f ~/.commonrc ] && . ~/.commonrc
 
 setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_ALL_DUPS
@@ -81,3 +81,11 @@ eval "yy() {
     $clip_command
 }"
 unset clip_command
+
+if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+  . /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
+if [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  . /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
