@@ -71,5 +71,5 @@ fi
 
 hostname_color="$(
   [ -f /etc/os-release ] && . /etc/os-release
-  printf '%d' "0x$(echo -n "$(uname -n)$NAME"|md5sum|head -c2)"
+  echo "$((0x$(echo -n "$(uname -n)$NAME"|md5sum|head -c8) % 214 + 17))"
 )"
