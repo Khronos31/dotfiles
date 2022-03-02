@@ -62,7 +62,7 @@ unset color_prompt force_color_prompt
 # If this is an xterm set the title to user@host:dir
 update_terminal_title() {
   local cwd="${PWD/#"$HOME"/"~"}"
-  printf '\e]0;%s\a' "$USER@$HOST:$cwd"
+  printf '\e]0;%s\a' "$USER@$(uname -n):$cwd"
 }
 autoload -Uz add-zsh-hook
 case "$TERM" in
