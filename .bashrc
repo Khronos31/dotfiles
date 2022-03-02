@@ -53,11 +53,11 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-  PS1='[$?] \[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+  PS1='[$?] \[\e[01;32m\]\u@\[\e[38;5;'"${hostname_color:-2}"'m\]\h\[\e[00m\]:\[\e[01;34m\]\w\[\e[00m\]\$ '
 else
   PS1='[$?] \u@\h:\w\$ '
 fi
-unset color_prompt force_color_prompt
+unset color_prompt force_color_prompt hostname_color
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in

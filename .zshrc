@@ -53,11 +53,11 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-  PROMPT='[%?] %B%F{green}%n@%m%f%b:%B%F{blue}%~%f%b%# '
+  PROMPT=$'[%?] %B%F{green}%n@%{\e[38;5;'"${hostname_color:-2}"'m%}%m%f%b:%B%F{blue}%~%f%b%# '
 else
   PROMPT='[%?] %n@%m:%~%# '
 fi
-unset color_prompt force_color_prompt
+unset color_prompt force_color_prompt hostname_color
 
 # If this is an xterm set the title to user@host:dir
 update_terminal_title() {

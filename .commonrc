@@ -62,5 +62,14 @@ export TEXTIMG_FONT_FILE="$HOME/Library/Fonts/PlemolJP-Text.ttf"
 export TEXTIMG_EMOJI_DIR="$HOME/Library/Fonts/emoji/noto-emoji/png/128"
 alias textimg='TEXTIMG_OUTPUT_DIR="$(pwd)" textimg'
 
-#export ENTFILE="/usr/share/entitlements/general.xml"
-alias resign='ldid -S"$ENTFILE" -M'
+if command -v ldid >/dev/null; then
+  if [ -f /usr/share/entitlements/general.xml ]; then
+    export ENTFILE="/usr/share/entitlements/general.xml"
+  fi
+  alias resign='ldid -S"$ENTFILE" -M'
+fi
+
+hostname_color="$(
+  [ -f /etc/os-release ] && . /etc/os-release
+  printf '%d' "0x$(echo -n "$(uname -n)$NAME"|md5sum|head -c2)"
+)"
