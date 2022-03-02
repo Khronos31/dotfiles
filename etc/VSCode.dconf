@@ -1,0 +1,16 @@
+[/]
+background-color='rgb(30,30,30)'
+bold-color='rgb(204,204,204)'
+bold-color-same-as-fg=false
+bold-is-bright=true
+cjk-utf8-ambiguous-width='wide'
+cursor-background-color='rgb(13,188,121)'
+cursor-colors-set=true
+cursor-foreground-color='rgb(13,188,121)'
+font='PlemolJP 12'
+foreground-color='rgb(255,255,255)'
+highlight-colors-set=false
+palette=['rgb(0,0,0)', 'rgb(205,49,49)', 'rgb(13,188,121)', 'rgb(229,229,16)', 'rgb(36,114,200)', 'rgb(188,63,188)', 'rgb(17,168,205)', 'rgb(229,229,229)', 'rgb(102,102,102)', 'rgb(241,76,76)', 'rgb(35,209,139)', 'rgb(245,245,67)', 'rgb(59,142,234)', 'rgb(214,112,214)', 'rgb(41,184,219)', 'rgb(229,229,229)']
+use-system-font=true
+use-theme-colors=false
+visible-name='VSCode'
