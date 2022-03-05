@@ -24,6 +24,10 @@ if command -v luarocks >/dev/null; then
   eval "$(luarocks path)"
 fi
 
+if command -v opam >/dev/null; then
+  eval "$(opam env)"
+fi
+
 [ -d "/Applications/Filza.app" ] &&
 filza() {
   local suffix=""
@@ -66,7 +70,12 @@ if command -v ldid >/dev/null; then
   if [ -f /usr/share/entitlements/general.xml ]; then
     export ENTFILE="/usr/share/entitlements/general.xml"
   fi
-  alias resign='ldid -S"$ENTFILE" -M'
+  resign() {
+    local file
+    for file in "$@"; do
+      ldid -S"$ENTFILE" -M "$file"
+    done
+  }
 fi
 
 hostname_color="$(
