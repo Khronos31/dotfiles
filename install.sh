@@ -4,14 +4,23 @@
 # Khronos31 | install.sh
 #
 
+SCRIPT_PATH="$(realpath -P "$0")"
+WORKDIR="$(dirname "$SCRIPT_PATH")"
+cd "$WORKDIR"
+
 timestamp="$(date +%Y%m%d_%H%M%S)"
 
 dotfiles=(.bash_profile .bashrc .zshrc .commonrc .common_aliases .gitconfig)
 
 for file in "${dotfiles[@]}"; do
   if [ -e "$HOME/$file" ]; then
-    mv "$HOME/$file" "$HOME/$file-$timestamp.old"
+    if [ -h "$HOME/$file" ]; then
+      unlink "$HOME/$file"
+    else
+      mv "$HOME/$file" "$HOME/$file-$timestamp.old"
+    fi
   fi
-  cp "$file" "$HOME/$file"
-  chmod 644 "$HOME/$file"
+  if [ -f "WORKDIR/$file" ]; then
+    ln -s "$WORKDIR/$file" "$HOME/$file"
+  fi
 done
