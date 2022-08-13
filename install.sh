@@ -20,7 +20,8 @@ for file in "${dotfiles[@]}"; do
       mv "$HOME/$file" "$HOME/$file-$timestamp.old"
     fi
   fi
-  if [ -f "WORKDIR/$file" ]; then
+  if [ -f "$WORKDIR/$file" ]; then
+    echo "$file" is symlink to "$WORKDIR/$file"
     ln -s "$WORKDIR/$file" "$HOME/$file"
   fi
 done
