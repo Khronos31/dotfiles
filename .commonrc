@@ -31,13 +31,17 @@ fi
 [ -d "/Applications/Filza.app" ] &&
 filza() {
   local suffix=""
-  if ! [ -e "$1" ]; then
-    printf 'filza: no such file or directory: %s\n' "$1" >&2
+  local filepath="."
+  if [ $# -ge 1 ]; then
+    filepath="$1"
+  fi
+  if ! [ -e "$filepath" ]; then
+    printf 'filza: no such file or directory: %s\n' "$filepath" >&2
     return 1
-  elif [ -d "$1" ]; then
+  elif [ -d "$filepath" ]; then
     suffix="/."
   fi
-  uiopen filza://view/"$(realpath -z "$1"|tr -d '\0'|od -tx1 -v -An|tr ' ' '%'|tr -d '\n')""$suffix"
+  uiopen filza://view/"$(realpath -z "$filepath"|tr -d '\0'|od -tx1 -v -An|tr ' ' '%'|tr -d '\n')""$suffix"
 }
 
 if command -v pbcopy >/dev/null; then
