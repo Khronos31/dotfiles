@@ -86,7 +86,7 @@ if command -v gcat >/dev/null; then
   if command -v gstat >/dev/null; then
     alias stat='gstat'
   elif command -v gnustat >/dev/null; then
-  	alias stat='gnustat'
+    alias stat='gnustat'
   fi
   alias stdbuf='gstdbuf'
   alias stty='gstty'
