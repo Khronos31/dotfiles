@@ -4,8 +4,8 @@
 # Khronos31 | ish-setup.sh
 #
 
-echo https://dl-cdn.alpinelinux.org/alpine/v3.14/main >> /etc/apk/repositories
-echo https://dl-cdn.alpinelinux.org/alpine/v3.14/community >> /etc/apk/repositories
+echo https://dl-cdn.alpinelinux.org/alpine/v3.18/main >> /etc/apk/repositories
+echo https://dl-cdn.alpinelinux.org/alpine/v3.18/community >> /etc/apk/repositories
 sed -i -e '/http:\/\/apk.ish.app/d' /etc/apk/repositories
 
 apk update &&
