@@ -3,6 +3,9 @@
 #
 # Khronos31 | ish-setup.sh
 #
+# legacy: 2026-07-07時点で不使用（サブスマホiPhone15にiSH自体は入れているが常用していない）。
+# Alpineバージョンもv3.18で固定されたまま古くなっている。再度使うことになったら要更新。
+#
 
 echo https://dl-cdn.alpinelinux.org/alpine/v3.18/main >> /etc/apk/repositories
 echo https://dl-cdn.alpinelinux.org/alpine/v3.18/community >> /etc/apk/repositories

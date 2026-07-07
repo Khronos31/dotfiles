@@ -3,6 +3,9 @@
 #
 # Khronos31 | ios-setup.sh
 #
+# legacy: 2026-07-07時点で不使用。Jailbroken iOS（apt/Cydia系）前提のスクリプトで、
+# 現在はJailbreakをしていないため対象環境が無い。
+#
 
 su <<'EOS'
 apt update &&
