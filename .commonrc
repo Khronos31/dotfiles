@@ -20,6 +20,23 @@ if [ -d "$HOME/.local/bin" ]; then
   export PATH="$HOME/.local/bin:$PATH"
 fi
 
+if ! command -v which >/dev/null 2>&1; then
+  # Termux/HAOS(Debian minimal)等、whichコマンド自体が入っていない環境向けのポータブル代替。
+  # command -v だけで完結するのでPOSIX準拠。
+  which() {
+    local cmd found=1
+    for cmd in "$@"; do
+      if command -v "$cmd" >/dev/null 2>&1; then
+        command -v "$cmd"
+        found=0
+      else
+        printf '%s not found\n' "$cmd" >&2
+      fi
+    done
+    return $found
+  }
+fi
+
 if command -v luarocks >/dev/null; then
   eval "$(luarocks path)"
 fi
