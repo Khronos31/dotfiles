@@ -61,23 +61,41 @@ filza() {
   uiopen filza://view/"$(realpath -z "$filepath"|tr -d '\0'|od -tx1 -v -An|tr ' ' '%'|tr -d '\n')""$suffix"
 }
 
+_clip_osc52() {
+  printf '\033]52;c;%s\a' "$(cat | base64 | tr -d '\n')"
+}
+
 if command -v pbcopy >/dev/null; then
-  clip_command='pbcopy'
+  _clip_backend() { command pbcopy; }
 elif command -v xclip >/dev/null; then
-  clip_command='xclip -selection c'
-  alias pbcopy='xclip -selection c'
+  _clip_backend() { xclip -selection c; }
   alias pbpaste='xclip -selection c -o'
 elif command -v termux-clipboard-set >/dev/null; then
-  clip_command='termux-clipboard-set'
-  alias pbcopy='termux-clipboard-set'
+  _clip_backend() { termux-clipboard-set; }
   alias pbpaste='termux-clipboard-get'
 elif [ -r /dev/clipboard ]; then
-  clip_command='pbcopy'
-  pbcopy() {
-    cat >/dev/clipboard
-  }
+  _clip_backend() { cat >/dev/clipboard; }
   pbpaste() {
     cat /dev/clipboard
+  }
+fi
+
+if command -v _clip_backend >/dev/null 2>&1; then
+  # --osc52 を指定した時だけOSC52経由（SSH越しでも手元の端末に届く。書き込み専用）。
+  # 指定が無ければ従来通りのローカルのバックエンドを使う。
+  clip_command='pbcopy'
+  pbcopy() {
+    if [ "$1" = "--osc52" ]; then
+      _clip_osc52
+    else
+      _clip_backend
+    fi
+  }
+elif [ -t 1 ]; then
+  # ローカルのクリップボード手段が何も見つからない場合の最終フォールバック。
+  clip_command='pbcopy'
+  pbcopy() {
+    _clip_osc52
   }
 fi
 
