@@ -6,11 +6,11 @@
 
 export LANG="ja_JP.UTF-8"
 
-export THEOS="$HOME/theos"
-export GOPATH="$HOME/go"
-export NIMBLE_DIR="$HOME/.nimble"
-export CARGO_HOME="$HOME/.cargo"
-export PATH="$THEOS/bin:$GOPATH/bin:$NIMBLE_DIR/bin:$CARGO_HOME/bin:$PATH"
+# export THEOS="$HOME/theos"
+# export GOPATH="$HOME/go"
+# export NIMBLE_DIR="$HOME/.nimble"
+# export CARGO_HOME="$HOME/.cargo"
+# export PATH="$THEOS/bin:$GOPATH/bin:$NIMBLE_DIR/bin:$CARGO_HOME/bin:$PATH"
 
 if [ -d "$HOME/bin" ]; then
   export PATH="$HOME/bin:$PATH"
