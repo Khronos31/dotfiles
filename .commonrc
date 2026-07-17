@@ -61,13 +61,10 @@ filza() {
   uiopen filza://view/"$(realpath -z "$filepath"|tr -d '\0'|od -tx1 -v -An|tr ' ' '%'|tr -d '\n')""$suffix"
 }
 
-<<<<<<< HEAD
 _clip_osc52() {
   printf '\033]52;c;%s\a' "$(base64 -w0)"
 }
 
-=======
->>>>>>> e6a0436777b9a1da0b4f128c8ba27bf3ed3e75f3
 if command -v xclip >/dev/null; then
   clip_command='xclip -selection c'
   alias pbpaste='xclip -selection c -o'
@@ -83,10 +80,7 @@ elif command -v pbcopy >/dev/null; then
   clip_command='pbcopy'
 fi
 
-<<<<<<< HEAD
 [ -n "$clip_command" ] &&
-=======
->>>>>>> e6a0436777b9a1da0b4f128c8ba27bf3ed3e75f3
 eval "pbcopy() {
   if [ \"$""1\" = '--osc52' ]; then
     printf '\033]52;c;%s\a' \"$""(base64 -w0)\"
