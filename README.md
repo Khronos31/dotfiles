@@ -44,7 +44,11 @@ Khronos31 個人用のシェル設定・環境構築スクリプト集。複数O
 ```sh
 # ~/.common_env.local の例
 path_prepend "$HOME/.grok/bin"
+export DISABLE_AUTOUPDATER=1
 ```
+
+対話用の機械固有設定は `$HOME/.commonrc.local`(同じく追跡しない)。`.common_env.local` は
+POSIX sh で読まれるため `[[ ]]` や補完の読み込みが書けない。それらはこちらへ置く。
 - `setup/` — OS/環境ごとの追加パッケージインストールスクリプト(`install.sh`とは別に手動で実行する)
 - `etc/` — VSCode・ターミナルなどの設定ファイル
   - [`pbcopy.ps1`](etc/pbcopy.ps1) — Windows PowerShell用 pbcopy/pbpaste。`$PROFILE` に以下を追記して読み込む:

@@ -100,3 +100,8 @@ hostname_color="$(
   [ -f /etc/os-release ] && . /etc/os-release
   echo "$((0x$(echo -n "$(uname -n)$NAME"|md5sum|head -c8) % 214 + 17))"
 )"
+
+# その機械にしか無い対話用の設定はここへ。git では追跡しない。
+# 環境変数(PATH等)は .common_env.local の担当。こちらは bash/zsh の構文が
+# 使えるので、補完の読み込みなど POSIX sh で書けないものを置く。
+[ -f ~/.commonrc.local ] && . ~/.commonrc.local
