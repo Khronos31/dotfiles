@@ -49,6 +49,23 @@ export DISABLE_AUTOUPDATER=1
 
 対話用の機械固有設定は `$HOME/.commonrc.local`(同じく追跡しない)。`.common_env.local` は
 POSIX sh で読まれるため `[[ ]]` や補完の読み込みが書けない。それらはこちらへ置く。
+
+### 既知の制限: 非対話 bash に PATH が届かない環境がある
+
+bash は非対話かつ非ログインだと起動ファイルを一切読まない。例外として、sshd 経由で
+起動された場合に `~/.bashrc` を読む挙動があるが、これは `SSH_SOURCE_BASHRC` 付きで
+ビルドされている場合に限る。
+
+| 環境 | `SSH_SOURCE_BASHRC` | `ssh <host> 'コマンド'` に PATH が届くか |
+|---|---|---|
+| Debian / Ubuntu | あり | 届く |
+| **Termux** | **無し** | **届かない** |
+| zsh (全環境) | — | 届く(`.zshenv` を必ず読むため) |
+
+確認方法: `strings "$(command -v bash)" | grep -qx SSH_CLIENT`
+
+Termux 機へ非対話でコマンドを送る場合は、PATH を当てにせず絶対パスで呼ぶか、
+`ssh <host> 'bash -lc "コマンド"'` のようにログインシェルを明示する。
 - `setup/` — OS/環境ごとの追加パッケージインストールスクリプト(`install.sh`とは別に手動で実行する)
 - `etc/` — VSCode・ターミナルなどの設定ファイル
   - [`pbcopy.ps1`](etc/pbcopy.ps1) — Windows PowerShell用 pbcopy/pbpaste。`$PROFILE` に以下を追記して読み込む:
