@@ -2,6 +2,11 @@
 # Khronos31 | .bashrc
 #
 
+# 環境変数は対話・非対話を問わず要るので、対話ガードより上で読む。
+# sshd 経由の非対話 bash も ~/.bashrc を読むため(SSH_SOURCE_BASHRC)、
+# `ssh host 'コマンド'` にもここで PATH が通る。
+[ -f ~/.common_env ] && . ~/.common_env
+
 [[ $- != *i* ]] && return
 
 [ -f ~/.commonrc ] && . ~/.commonrc

@@ -10,7 +10,7 @@ cd "$WORKDIR"
 
 timestamp="$(date +%Y%m%d_%H%M%S)"
 
-dotfiles=(.bash_profile .bashrc .zshrc .commonrc .common_aliases .gitconfig)
+dotfiles=(.profile .bash_profile .bashrc .zshenv .zshrc .common_env .commonrc .common_aliases .gitconfig)
 
 for file in "${dotfiles[@]}"; do
   if [ -e "$HOME/$file" ]; then

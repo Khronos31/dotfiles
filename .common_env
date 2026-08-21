@@ -1,0 +1,44 @@
+#
+# Khronos31 | .common_env
+#
+# セッションに一度だけ効かせたい環境変数を置く。エイリアス・プロンプト・
+# 対話用の関数は .commonrc の担当で、ここには書かない。
+#
+# POSIX sh で書くこと。デスクトップセッション(GDM等)は ~/.profile を
+# /bin/sh で読むため、bash/zsh 固有の構文は使えない。
+#
+# 入口が複数あり(.profile / .bashrc / .zshenv)、同じセッションで
+# 何度も読まれる。PATH の操作は必ず冪等にする。
+
+export LANG="ja_JP.UTF-8"
+
+# PATH の先頭に足す。存在しないディレクトリと、既に入っているものは無視する。
+path_prepend() {
+  [ -d "$1" ] || return 0
+  case ":$PATH:" in
+    *":$1:"*) ;;
+    *) PATH="$1:$PATH" ;;
+  esac
+}
+
+# export THEOS="$HOME/theos"
+# export GOPATH="$HOME/go"
+# export NIMBLE_DIR="$HOME/.nimble"
+# export CARGO_HOME="$HOME/.cargo"
+# path_prepend "$THEOS/bin"
+# path_prepend "$GOPATH/bin"
+# path_prepend "$NIMBLE_DIR/bin"
+# path_prepend "$CARGO_HOME/bin"
+
+path_prepend "$HOME/bin"
+path_prepend "$HOME/.local/bin"
+
+export PATH
+
+# その機械にしか無い事情はここへ。git では追跡しない。
+# 能力で判定できるもの(command -v で分かるもの)は .commonrc に書けばよく、
+# ここに来るのは「このマシンに入れた」という事実そのものだけ。
+#
+#   例: path_prepend "$HOME/.grok/bin"
+#
+[ -f ~/.common_env.local ] && . ~/.common_env.local

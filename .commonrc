@@ -1,24 +1,13 @@
 #
 # Khronos31 | .commonrc
 #
+# bash/zsh 共通の「対話シェル用」設定。.bashrc / .zshrc から読まれる。
+#
+# PATH と LANG はここではなく .common_env に置く。このファイルは対話
+# ガードの内側でしか走らないため、ここに環境変数を書くと `ssh host
+# 'コマンド'` のような非対話シェルに届かない。
 
 [ -f ~/.common_aliases ] && . ~/.common_aliases
-
-export LANG="ja_JP.UTF-8"
-
-# export THEOS="$HOME/theos"
-# export GOPATH="$HOME/go"
-# export NIMBLE_DIR="$HOME/.nimble"
-# export CARGO_HOME="$HOME/.cargo"
-# export PATH="$THEOS/bin:$GOPATH/bin:$NIMBLE_DIR/bin:$CARGO_HOME/bin:$PATH"
-
-if [ -d "$HOME/bin" ]; then
-  export PATH="$HOME/bin:$PATH"
-fi
-
-if [ -d "$HOME/.local/bin" ]; then
-  export PATH="$HOME/.local/bin:$PATH"
-fi
 
 if ! command -v which >/dev/null 2>&1; then
   # Termux/HAOS(Debian minimal)等、whichコマンド自体が入っていない環境向けのポータブル代替。
