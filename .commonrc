@@ -12,7 +12,10 @@
 if ! command -v which >/dev/null 2>&1; then
   # Termux/HAOS(Debian minimal)等、whichコマンド自体が入っていない環境向けのポータブル代替。
   # command -v だけで完結するのでPOSIX準拠。
-  which() {
+  # 関数名を \which とクォートするのは、Fedora/RHEL 系が /etc/profile.d/which2.sh で
+  # which をエイリアス定義しており、エイリアス展開がパース時に起きるため。素で
+  # which() と書くと、この if が実行されない環境でも構文エラーになる。
+  \which() {
     local cmd found=1
     for cmd in "$@"; do
       if command -v "$cmd" >/dev/null 2>&1; then
