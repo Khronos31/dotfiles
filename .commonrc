@@ -53,33 +53,39 @@ filza() {
   uiopen filza://view/"$(realpath -z "$filepath"|tr -d '\0'|od -tx1 -v -An|tr ' ' '%'|tr -d '\n')""$suffix"
 }
 
+# クリップボード。--osc52 を付けると端末のOSC 52シーケンスで「手元の」
+# クリップボードへ送る。SSH越しに使う想定（端末側の対応が必要）。
+# GNUの -w0 はBSD/macOSに無い場合があるため tr で改行を落とす。
 _clip_osc52() {
-  printf '\033]52;c;%s\a' "$(base64 -w0)"
+  printf '\033]52;c;%s\a' "$(base64 | tr -d '\n')"
 }
 
 if command -v xclip >/dev/null; then
-  clip_command='xclip -selection c'
+  _clip_native() { xclip -selection c; }
   alias pbpaste='xclip -selection c -o'
 elif command -v termux-clipboard-set >/dev/null; then
-  clip_command='termux-clipboard-set'
+  _clip_native() { termux-clipboard-set; }
   alias pbpaste='termux-clipboard-get'
 elif [ -r /dev/clipboard ]; then
-  clip_command='cat >/dev/clipboard'
+  _clip_native() { cat >/dev/clipboard; }
   pbpaste() {
     cat /dev/clipboard
   }
 elif command -v pbcopy >/dev/null; then
-  clip_command='pbcopy'
+  # macOS。関数名が実体と同じなので、command を挟まないと自分を呼んで無限再帰する。
+  _clip_native() { command pbcopy; }
 fi
 
-[ -n "$clip_command" ] &&
-eval "pbcopy() {
-  if [ \"$""1\" = '--osc52' ]; then
-    printf '\033]52;c;%s\a' \"$""(base64 -w0)\"
+pbcopy() {
+  if [ "$1" = '--osc52' ]; then
+    _clip_osc52
+  elif command -v _clip_native >/dev/null; then
+    _clip_native
   else
-    $clip_command
+    # ネイティブのクリップボードが無い環境ではOSC 52を既定にする。
+    _clip_osc52
   fi
-}"
+}
 
 # aliases and environment variables for textimg
 export RUNEWIDTH_EASTASIAN=1
