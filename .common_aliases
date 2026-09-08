@@ -129,31 +129,47 @@ if command -v gsed >/dev/null; then
 fi
 
 # enable color support of ls and also add handy aliases
+#
+# dircolors は GNU coreutils にしか無い。色付けそのものは BSD userland
+# (Chimera / FreeBSD / 素の macOS) でもできるので、両者を同じ if に入れない。
+# 以前は色付け全体が dircolors の有無で囲われており、BSD 用の `ls -G` にも
+# 到達しなかった——必要な環境ほど効かない作りだった。
 if command -v dircolors >/dev/null; then
   test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
 
-  if [[ "$(alias ls 2>/dev/null)" = *gls* ]]; then
-    alias ls='gls --color=auto'
-  else
-    if [[ "$(ls --version 2>/dev/null)" = *GNU* ]]; then
-      alias ls='ls --color=auto'
-    else
-      alias ls='ls -G'
-    fi
-  fi
-  #alias dir='dir --color=auto'
-  #alias vdir='vdir --color=auto'
+# `[[ ]]` は bash/zsh 固有で POSIX sh には無い(dash や Chimera の /bin/sh で
+# `[[: not found` になる)。判定は case で行う。
+case "$(alias ls 2>/dev/null)" in
+  *gls*) alias ls='gls --color=auto' ;;
+  *)
+    # GNU ls は --version が通る。BSD ls はエラーになり空文字になる
+    case "$(ls --version 2>/dev/null)" in
+      *GNU*) alias ls='ls --color=auto' ;;
+      *)     alias ls='ls -G' ;;
+    esac
+    ;;
+esac
+#alias dir='dir --color=auto'
+#alias vdir='vdir --color=auto'
 
-  if [[ "$(alias grep 2>/dev/null)" = *ggrep* ]]; then
+# --color=auto は GNU grep と FreeBSD grep が対応する。未対応の実装では
+# usage エラー(終了ステータス 2)になるので、そのときは素のままにする。
+case "$(alias grep 2>/dev/null)" in
+  *ggrep*)
     alias grep='ggrep --color=auto'
     alias fgrep='gfgrep --color=auto'
     alias egrep='gegrep --color=auto'
-  else
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-  fi
-fi
+    ;;
+  *)
+    grep --color=auto -q '' /dev/null 2>/dev/null
+    if [ $? -ne 2 ]; then
+      alias grep='grep --color=auto'
+      alias fgrep='fgrep --color=auto'
+      alias egrep='egrep --color=auto'
+    fi
+    ;;
+esac
 
 # some more ls aliases
 alias ll='ls -alF'
