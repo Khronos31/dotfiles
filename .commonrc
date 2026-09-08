@@ -12,21 +12,25 @@
 if ! command -v which >/dev/null 2>&1; then
   # Termux/HAOS(Debian minimal)等、whichコマンド自体が入っていない環境向けのポータブル代替。
   # command -v だけで完結するのでPOSIX準拠。
-  # 関数名を \which とクォートするのは、Fedora/RHEL 系が /etc/profile.d/which2.sh で
-  # which をエイリアス定義しており、エイリアス展開がパース時に起きるため。素で
-  # which() と書くと、この if が実行されない環境でも構文エラーになる。
-  \which() {
+  #
+  # eval で包むのは、Fedora/RHEL 系が /etc/profile.d/which2.sh で which をエイリアス
+  # 定義しているため。エイリアス展開はパース時に起きるので、素で which() と書くと
+  # この if が実行されない環境でも構文エラーになる。eval なら、この分岐に入る環境
+  # （= which が存在しない = エイリアスも無い）でしか解析されない。
+  # 関数名を \which とクォートする方法は使えない。bash が「not a valid identifier」
+  # として実行時に弾き、関数が定義されないため。
+  eval 'which() {
     local cmd found=1
     for cmd in "$@"; do
       if command -v "$cmd" >/dev/null 2>&1; then
         command -v "$cmd"
         found=0
       else
-        printf '%s not found\n' "$cmd" >&2
+        printf "%s not found\n" "$cmd" >&2
       fi
     done
     return $found
-  }
+  }'
 fi
 
 if command -v luarocks >/dev/null; then
