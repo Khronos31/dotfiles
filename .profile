@@ -9,3 +9,9 @@
 # 両方からそれを読む形にしている。
 
 [ -f ~/.common_env ] && . ~/.common_env
+
+# ash / dash / ksh は、対話シェルの初期化に $ENV が指すファイルを読む
+# （bash の .bashrc、zsh の .zshrc に相当するものが無い）。Alpine のように
+# ログインシェルが /bin/sh の環境で、対話層の設定を読ませるために指定する。
+ENV="$HOME/.shrc"
+export ENV

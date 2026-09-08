@@ -1,0 +1,9 @@
+#
+# Khronos31 | .shrc
+#
+# ash/dash/ksh が $ENV 経由で読む対話シェル用の設定。
+# .bashrc / .zshrc と同じ役割で、実体は .commonrc に置いてある。
+# $ENV は対話シェルでしか読まれないため、対話ガードは不要。
+#
+
+[ -f ~/.commonrc ] && . ~/.commonrc
