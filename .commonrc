@@ -57,8 +57,17 @@ filza() {
   uiopen filza://view/"$(realpath -z "$filepath"|tr -d '\0'|od -tx1 -v -An|tr ' ' '%'|tr -d '\n')""$suffix"
 }
 
-# クリップボード。--osc52 を付けると端末のOSC 52シーケンスで「手元の」
-# クリップボードへ送る。SSH越しに使う想定（端末側の対応が必要）。
+# クリップボード。
+#
+# 既定は端末のOSC 52シーケンスで「手元の」クリップボードへ送る。
+# ローカルのクリップボード実体(xclip / pbcopy / termux-clipboard-set 等)を
+# 使いたいときだけ --native を付ける。
+#
+# 2026-09-09に既定を反転した。以前はネイティブが既定で --osc52 で切り替える形
+# だったが、SSH越しに使う場面が圧倒的に多く、既定が「繋いだ先のクリップボード」
+# を指しているのは実態と噛み合わなかった。
+# OSC 52は端末側の対応が要る（未対応の端末では黙って何も起きない）。
+#
 # GNUの -w0 はBSD/macOSに無い場合があるため tr で改行を落とす。
 _clip_osc52() {
   printf '\033]52;c;%s\a' "$(base64 | tr -d '\n')"
@@ -81,14 +90,26 @@ elif command -v pbcopy >/dev/null; then
 fi
 
 pbcopy() {
-  if [ "$1" = '--osc52' ]; then
-    _clip_osc52
-  elif command -v _clip_native >/dev/null; then
-    _clip_native
-  else
-    # ネイティブのクリップボードが無い環境ではOSC 52を既定にする。
-    _clip_osc52
-  fi
+  case "${1:-}" in
+    --native)
+      if command -v _clip_native >/dev/null; then
+        _clip_native
+      else
+        # 明示的に --native を求められたが実体が無い。ここで黙って捨てると
+        # パイプで渡された内容が消えるので、断ってからOSC 52へ回す。
+        echo 'pbcopy: ネイティブのクリップボードが無いため OSC 52 で送る' >&2
+        _clip_osc52
+      fi
+      ;;
+    ''|--osc52)
+      # 引数なしが既定。--osc52 は旧来の綴りで、意味は既定と同じ
+      _clip_osc52
+      ;;
+    *)
+      echo "pbcopy: 不明なオプション: $1 (使えるのは --native / --osc52)" >&2
+      return 2
+      ;;
+  esac
 }
 
 # aliases and environment variables for textimg
