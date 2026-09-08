@@ -15,7 +15,9 @@ HISTFILE="$HOME/.zsh_history"
 HISTSIZE=1000
 SAVEHIST=1000
 
-[[ -v PATHEXT ]] &&
+# `[[ -v ]]` は bash 4.2 以降 / 新しめの zsh 専用。macOS の bash 3.2 では構文エラーに
+# なるため、POSIX の ${var+x} で「定義されているか」を見る。
+[ -n "${PATHEXT+x}" ] &&
 eval 'command_not_found_handler() {
   local ext
   for ext in ${=PATHEXT//;/ }; do
