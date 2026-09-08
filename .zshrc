@@ -75,12 +75,15 @@ case "$TERM" in
   *) ;;
 esac
 
-[ -n "$clip_command" ] &&
-eval "yy() {
-  printf '%s' \"\$history[\$((HISTCMD-1))]\" |
-    $clip_command
-}"
-unset clip_command
+# 直前に実行したコマンドラインをクリップボードへ送る。
+# pbcopy は .commonrc が定義する関数で、既定は OSC 52 ——
+# つまり SSH 越しでも「手元の」クリップボードへ届く。
+#
+# 以前は $clip_command という変数を経由していたが、その変数に代入する箇所が
+# どこにも無く、yy は定義されないままだった（2026-09-09に発見）。
+yy() {
+  printf '%s' "$history[$((HISTCMD-1))]" | pbcopy
+}
 
 if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
   . /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh

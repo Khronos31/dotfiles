@@ -75,13 +75,18 @@ case "$TERM" in
   *) ;;
 esac
 
-[ -n "$clip_command" ] &&
-eval "yy() {
-  local hist=\"\$(fc -ln -1)\"
-  printf '%s' \"\${hist:2}\" |
-    $clip_command
-}"
-unset clip_command
+# 直前に実行したコマンドラインをクリップボードへ送る。
+# pbcopy は .commonrc が定義する関数で、既定は OSC 52 ——
+# つまり SSH 越しでも「手元の」クリップボードへ届く。
+#
+# 以前は $clip_command という変数を経由していたが、その変数に代入する箇所が
+# どこにも無く、yy は定義されないままだった（2026-09-09に発見）。
+# fc -ln の出力は先頭に空白が付くため 2文字落とす。
+yy() {
+  local hist
+  hist="$(fc -ln -1)"
+  printf '%s' "${hist:2}" | pbcopy
+}
 
 if [ -f /usr/share/bash-completion/bash_completion ]; then
   . /usr/share/bash-completion/bash_completion
