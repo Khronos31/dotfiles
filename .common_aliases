@@ -140,14 +140,28 @@ fi
 
 # `[[ ]]` は bash/zsh 固有で POSIX sh には無い(dash や Chimera の /bin/sh で
 # `[[: not found` になる)。判定は case で行う。
+#
+# 実装を同定してから決めつけるのをやめ、grep 側と同じく「オプションが通るか」を
+# 試す。以前は `ls --version` に GNU が無ければ BSD とみなして `ls -G` を張って
+# いたが、これは userland が2種類しか無いという前提だった。
+# 2026-09-10 に OpenWrt(BusyBox 1.37) で破綻を実測した:
+#   ls --version → ls: unrecognized option: version （空文字になる）
+#   ls -G        → ls: unrecognized option: G       （BSD扱いされて失敗）
+#   ls --color=auto → 通る
+# BusyBox は GNU でも BSD でもない第3の userland で、`--color` 側を持つ。
+#
+# ⚠️ サブシェルで / へ移動してから試すのは、BSD ls が `--` で解釈を打ち切り
+#    `color=auto` を**ファイル名**として扱うため。カレントディレクトリに同名の
+#    ファイルがあると「BSDなのに --color が通った」と誤判定する。
+#    `-d` はカレントが巨大でも安く済ませるため。
 case "$(alias ls 2>/dev/null)" in
   *gls*) alias ls='gls --color=auto' ;;
   *)
-    # GNU ls は --version が通る。BSD ls はエラーになり空文字になる
-    case "$(ls --version 2>/dev/null)" in
-      *GNU*) alias ls='ls --color=auto' ;;
-      *)     alias ls='ls -G' ;;
-    esac
+    if ( cd / && ls -d --color=auto . ) >/dev/null 2>&1; then
+      alias ls='ls --color=auto'   # GNU / BusyBox / uutils
+    elif ( cd / && ls -d -G . ) >/dev/null 2>&1; then
+      alias ls='ls -G'             # BSD / chimerautils / macOS
+    fi
     ;;
 esac
 #alias dir='dir --color=auto'
