@@ -50,3 +50,50 @@ for file in "$@"; do
     ln -s "$WORKDIR/$file" "$HOME/$file"
   fi
 done
+
+# 機械固有の設定は、追跡ファイルへの symlink ではなく $HOME の実ファイルに置く。
+# 雛形が無いと「どこに何を書けるか」が読み取れないため、無い場合だけ作る。
+#
+# ⚠️ 既にある場合は中身を持っている。上書きも .old への退避もしない
+#    （上の symlink 群と違い、ここには復元元が無い）。
+for file in .common_env.local .commonrc.local; do
+  if [ -e "$HOME/$file" ] || [ -h "$HOME/$file" ]; then
+    echo "$file already exists; left untouched"
+    continue
+  fi
+  case "$file" in
+    .common_env.local)
+      cat > "$HOME/$file" <<'EOF'
+#
+# この機械にしか無い事情を書く。git では追跡しない。
+# .common_env の末尾から読まれる。
+#
+# コマンドの有無で判定できないもの — 「この機械にこれを入れた」という事実
+# そのもの — を置く。path_prepend が使える。
+#
+# POSIX sh として読まれるため [[ ]] や配列は書けない。対話シェル向けの設定は
+# .commonrc.local の担当。
+#
+# 例:
+#   path_prepend "$HOME/.grok/bin"
+#   export DISABLE_AUTOUPDATER=1
+#
+EOF
+      ;;
+    .commonrc.local)
+      cat > "$HOME/$file" <<'EOF'
+#
+# この機械にしか無い対話用の設定を書く。git では追跡しない。
+# .commonrc の末尾から読まれる。
+#
+# bash/zsh の構文が使えるので、補完の読み込みなど POSIX sh で書けないものを
+# 置く。環境変数や PATH は .common_env.local の担当。
+#
+# 例:
+#   [ -d /opt/homebrew ] && fpath+=(/opt/homebrew/share/zsh/site-functions)
+#
+EOF
+      ;;
+  esac
+  echo "$file created from template"
+done
