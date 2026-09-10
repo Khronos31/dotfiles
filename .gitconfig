@@ -8,3 +8,14 @@
 	email = 39792509+Khronos31@users.noreply.github.com
 [url "git@github.com:"]
 	pushInsteadOf = https://github.com/
+
+# 機械固有の設定は ~/.gitconfig.local に書く。git では追跡しない。
+#
+# ~/.gitconfig はこの追跡ファイルへの symlink なので、ここに機械固有の設定
+# （証明書のパス、credential helper の絶対パス等）を書くとリポジトリ本体が
+# 汚れ、pull のたびに衝突し、うっかりコミットすると他機を壊す。
+#
+# include は最後に置く。後に読んだものが勝つため、.local で上書きできる。
+# 存在しないファイルは黙って無視されるので、置いていない機械でも害はない。
+[include]
+	path = ~/.gitconfig.local

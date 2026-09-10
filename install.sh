@@ -56,7 +56,7 @@ done
 #
 # ⚠️ 既にある場合は中身を持っている。上書きも .old への退避もしない
 #    （上の symlink 群と違い、ここには復元元が無い）。
-for file in .common_env.local .commonrc.local; do
+for file in .common_env.local .commonrc.local .gitconfig.local; do
   if [ -e "$HOME/$file" ] || [ -h "$HOME/$file" ]; then
     echo "$file already exists; left untouched"
     continue
@@ -92,6 +92,23 @@ EOF
 # 例:
 #   [ -d /opt/homebrew ] && fpath+=(/opt/homebrew/share/zsh/site-functions)
 #
+EOF
+      ;;
+    .gitconfig.local)
+      cat > "$HOME/$file" <<'EOF'
+# この機械にしか無い git の設定を書く。git では追跡しない。
+# .gitconfig の末尾から include される（後に読んだものが勝つ）。
+#
+# ~/.gitconfig は追跡ファイルへの symlink なので、そちらに書くと
+# リポジトリ本体が汚れる。パスを含む設定は必ずこちらへ。
+#
+# 例:
+#   [http]
+#   	sslCAInfo = /var/jb/etc/ssl/certs/cacert.pem
+#
+#   [credential "https://github.com"]
+#   	helper =
+#   	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
 EOF
       ;;
   esac
