@@ -34,7 +34,7 @@ timestamp="$(date +%Y%m%d_%H%M%S)"
 # 配列は bash 固有のため、位置パラメータで持つ。
 # 空白区切りの変数を for に渡す方法は使えない。zsh は既定で単語分割しないため、
 # zsh install.sh と叩かれたときに1要素として扱われ、黙って何もしなくなる。
-set -- .profile .bash_profile .bashrc .zshenv .zshrc .shrc \
+set -- .profile .bash_profile .bashrc .zshenv .zprofile .zshrc .shrc \
        .common_env .commonrc .common_aliases .gitconfig
 
 for file in "$@"; do

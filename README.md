@@ -9,7 +9,7 @@ Khronos31 個人用のシェル設定・環境構築スクリプト集。複数O
 ./install.sh
 ```
 
-`.profile` `.bash_profile` `.bashrc` `.zshenv` `.zshrc` `.shrc` `.common_env` `.commonrc` `.common_aliases` `.gitconfig` を
+`.profile` `.bash_profile` `.bashrc` `.zshenv` `.zprofile` `.zshrc` `.shrc` `.common_env` `.commonrc` `.common_aliases` `.gitconfig` を
 `$HOME` にシンボリックリンクする。
 既に同名ファイルが存在する場合は `<ファイル名>-<タイムスタンプ>.old` として退避してから上書きする。
 
@@ -46,7 +46,7 @@ SSH越しに使う場面が圧倒的に多く、既定が「繋いだ先のク�
 （例: Studio Code Server の統合ターミナルは非対応）。その場合は `--native` を使う。
 `pbpaste` は従来どおりネイティブのみ——OSC 52の読み出しは対応端末が少なく、
 セキュリティ上無効化されていることが多いため。
-- `.profile` / `.bash_profile` / `.bashrc` / `.zshenv` / `.zshrc` / `.shrc` — シェル別の入口。
+- `.profile` / `.bash_profile` / `.bashrc` / `.zshenv` / `.zprofile` / `.zshrc` / `.shrc` — シェル別の入口。
   上の2つを適切な層で読むだけ + シェル固有の設定(ヒストリ・プロンプト・補完)
 
 | 入口 | 読まれる場面 | `.common_env` | `.commonrc` |
@@ -55,6 +55,7 @@ SSH越しに使う場面が圧倒的に多く、既定が「繋いだ先のク�
 | `.bash_profile` | bash のログインシェル | ✅ | ✅ |
 | `.bashrc` | bash の対話シェル / sshd 経由の非対話 bash | ✅ | 対話時のみ |
 | `.zshenv` | zsh の全起動 | ✅ | — |
+| `.zprofile` | zsh のログインシェル（システムの `zprofile` に PATH を潰された後の復旧） | ✅ | — |
 | `.zshrc` | zsh の対話シェル | — | ✅ |
 | `.shrc` | ash/dash/ksh の対話シェル（`$ENV` 経由。Alpine 等でログインシェルが `/bin/sh` の環境） | ✅ | ✅ |
 
