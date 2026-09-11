@@ -42,3 +42,61 @@ export PATH
 #   例: path_prepend "$HOME/.grok/bin"
 #
 [ -f ~/.common_env.local ] && . ~/.common_env.local
+
+# ~/dotfiles に新しいコミットが来ていたらログイン時に知らせる。呼ぶのは
+# ログインシェルの入口(.profile / .zprofile)だけ。**自動では pull しない**
+# → docs/decision: 起動時の自動更新は採らない(ローカル変更と衝突するため)。
+#
+# ネットワークをプロンプトの経路に入れないこと。ログイン時にやるのは
+# キャッシュ1個の読み出しとSHAの比較だけで、1ミリ秒に満たない。実際の問い合わせは
+# キャッシュが古いときだけバックグラウンドへ投げ、結果は次回のログインで効く。
+# 圏外でも回線が遅くてもログインは遅くならない(実測: ls-remote は 0.5〜1.1秒、
+# 初回は5秒を超えることがある)。
+#
+# 状態を書き換えない `ls-remote` を使う。`fetch` だとリポジトリを触るため。
+# 無効化: ~/.common_env.local で DOTFILES_UPDATE_CHECK=0
+dotfiles_update_check() {
+  [ "${DOTFILES_UPDATE_CHECK:-1}" = 1 ] || return 0
+  [ -t 1 ] || return 0
+  command -v git >/dev/null 2>&1 || return 0
+
+  _dfu_dir="${DOTFILES_DIR:-$HOME/dotfiles}"
+  [ -d "$_dfu_dir/.git" ] || return 0
+  _dfu_cache="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles-remote-head"
+  _dfu_at=''
+  _dfu_sha=''
+
+  # 判定。ローカルだけで完結し、ネットワークには触らない。
+  if [ -f "$_dfu_cache" ]; then
+    read -r _dfu_at _dfu_sha < "$_dfu_cache"
+    case "$_dfu_at" in ''|*[!0-9]*) _dfu_at='' ;; esac
+    # リモートの先頭コミットを手元が持っていなければ遅れている。
+    # 手元が進んでいる場合はリモートのコミットを持っているので黙る。
+    if [ -n "$_dfu_sha" ] &&
+       ! git -C "$_dfu_dir" cat-file -e "${_dfu_sha}^{commit}" 2>/dev/null
+    then
+      _dfu_url=$(git -C "$_dfu_dir" remote get-url origin 2>/dev/null |
+        sed -e 's#^git@\([^:]*\):#https://\1/#' -e 's#\.git$##')
+      printf '\n  New version is available!\n'
+      [ -n "$_dfu_url" ] && printf '  %s\n' "$_dfu_url"
+      printf '  git -C %s pull && %s/install.sh\n\n' "$_dfu_dir" "$_dfu_dir"
+    fi
+  fi
+
+  # キャッシュが古ければ裏で更新する。`( ... & )` で入れ子にしているのは、
+  # zsh の対話ログインで `[1] 12345` というジョブ通知を出させないため。
+  _dfu_now=$(date +%s 2>/dev/null) || return 0
+  if [ -z "$_dfu_at" ] || [ "$((_dfu_now - _dfu_at))" -ge "${DOTFILES_UPDATE_TTL:-21600}" ]; then
+    (
+      (
+        _sha=$(git -C "$_dfu_dir" ls-remote --quiet origin HEAD 2>/dev/null | cut -f1)
+        [ -n "$_sha" ] || exit 0
+        mkdir -p "${_dfu_cache%/*}" 2>/dev/null
+        printf '%s %s\n' "$(date +%s)" "$_sha" > "$_dfu_cache.$$" &&
+          mv "$_dfu_cache.$$" "$_dfu_cache"
+      ) >/dev/null 2>&1 &
+    ) >/dev/null 2>&1
+  fi
+
+  unset _dfu_dir _dfu_cache _dfu_at _dfu_sha _dfu_url _dfu_now
+}
