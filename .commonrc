@@ -114,8 +114,8 @@ pbcopy() {
 
 # aliases and environment variables for textimg
 export RUNEWIDTH_EASTASIAN=1
-export TEXTIMG_FONT_FILE="$HOME/Library/Fonts/PlemolJP-Text.ttf"
-export TEXTIMG_EMOJI_DIR="$HOME/Library/Fonts/emoji/noto-emoji/png/128"
+#export TEXTIMG_FONT_FILE="$HOME/Library/Fonts/PlemolJP-Text.ttf"
+#export TEXTIMG_EMOJI_DIR="$HOME/Library/Fonts/emoji/noto-emoji/png/128"
 alias textimg='TEXTIMG_OUTPUT_DIR="$(pwd)" textimg'
 
 if command -v ldid >/dev/null; then
