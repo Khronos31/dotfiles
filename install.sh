@@ -37,17 +37,39 @@ timestamp="$(date +%Y%m%d_%H%M%S)"
 set -- .profile .bash_profile .bashrc .zshenv .zprofile .zshrc .shrc \
        .common_env .commonrc .common_aliases .gitconfig
 
+# 既存のリンクを外す道具を先に決める。
+#
+# unlink はリンクを1本消すだけで、-f も -r も持たない。判定を間違えたときに
+# 被害が広がらないので優先する。ただし busybox には unlink applet が無い
+# （OpenWrt 25.12.5 で実測。`busybox --list` に載っていない）。
+# 無い環境では rm で落とすが、-f は付けない——存在は上で確かめているので、
+# 消せなかったときは黙らせずに失敗させる。
+if command -v unlink >/dev/null 2>&1; then
+  remove_link() { unlink "$1"; }
+else
+  remove_link() { rm "$1"; }
+fi
+
+failed=0
+
 for file in "$@"; do
   if [ -e "$HOME/$file" ] || [ -h "$HOME/$file" ]; then
     if [ -h "$HOME/$file" ]; then
-      unlink "$HOME/$file"
+      remove_link "$HOME/$file" || { failed=1; continue; }
     else
-      mv "$HOME/$file" "$HOME/$file-$timestamp.old"
+      mv "$HOME/$file" "$HOME/$file-$timestamp.old" || { failed=1; continue; }
     fi
   fi
   if [ -f "$WORKDIR/$file" ]; then
-    echo "$file" is symlink to "$WORKDIR/$file"
-    ln -s "$WORKDIR/$file" "$HOME/$file"
+    # 張れたことを確認してから言う。先に表示すると、失敗しても成功したように
+    # 見える。OpenWrt で unlink が無く ln が File exists で落ちたとき、
+    # 10本すべてについて「symlink to ...」と表示しながら1本も張れていなかった。
+    if ln -s "$WORKDIR/$file" "$HOME/$file"; then
+      echo "$file" is symlink to "$WORKDIR/$file"
+    else
+      echo "install.sh: $file の symlink を張れませんでした" >&2
+      failed=1
+    fi
   fi
 done
 
@@ -114,3 +136,8 @@ EOF
   esac
   echo "$file created from template"
 done
+
+# 1本でも張れなかったら非ゼロで終わる。呼び出し側（デプロイスクリプト等）が
+# 気づけるようにするため。表示だけで済ませると、今回の OpenWrt のように
+# 「成功したように見えて何も張れていない」が通ってしまう。
+exit "$failed"
